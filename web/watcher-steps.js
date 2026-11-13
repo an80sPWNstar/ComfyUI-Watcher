@@ -55,7 +55,7 @@ async function loadFonts() {
     setFontsReady(true);
     redraw();
   } catch (err) {
-    console.warn('[comfyuiWATCHER] node fonts failed to load, falling back to system faces', err);
+    console.warn('[ComfyUI Watcher] node fonts failed to load, falling back to system faces', err);
   }
 }
 
@@ -307,7 +307,7 @@ function widgetSpace(node) {
 const nodeHeight = (face, node) => faceHeight(face, node) + widgetSpace(node);
 
 app.registerExtension({
-  name: 'comfyuiWATCHER.steps',
+  name: 'comfyui-watcher.steps',
   async nodeCreated(node) {
     // Covers loading a saved workflow, where nodes appear without onNodeCreated being useful yet.
     if (FACES[node?.type]?.needsDevices) ensureDevicePolling();

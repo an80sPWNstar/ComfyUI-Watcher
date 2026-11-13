@@ -65,7 +65,7 @@ Then **restart ComfyUI** — not just a browser refresh. There is nothing else t
 you should see:
 
 ```
-comfyuiWATCHER progress relay installed (broadcasting watcher.* events)
+ComfyUI Watcher progress relay installed (broadcasting watcher.* events)
 ```
 
 ### Adding one to your graph
@@ -105,9 +105,6 @@ ComfyUI/custom_nodes/comfyui-watcher/
 If the nodes don't show up, it's almost always that the folder is nested one level too deep —
 `custom_nodes/ComfyUI-Watcher-main/ComfyUI-Watcher-main/` is the usual one after unzipping.
 The `__init__.py` has to be directly inside the folder that sits in `custom_nodes`.
-
-If you have an older copy in a folder called `comfyui-watcher-relay`, **delete it** first. Two
-copies put every node in the menu twice.
 
 ## The VRAM node only shows the GPU you're actually using
 

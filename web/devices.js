@@ -136,8 +136,7 @@ export function allDevices(stats) {
 /**
  * WHICH GPU STACK IS THIS? The build tag is the only reliable tell — PyTorch's ROCm wheels report
  * `torch.cuda`, devices of type "cuda", and even a `cuda:0` device name, so an AMD box and an
- * NVIDIA box look identical in /system_stats apart from `pytorch_version`. Same rule the desktop
- * widget's detectAccelerator() uses.
+ * NVIDIA box look identical in /system_stats apart from `pytorch_version`.
  *
  * An untagged build (source or conda) falls back to the card's own name — a name never yields a
  * version, but it does identify the stack.

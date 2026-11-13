@@ -1,9 +1,9 @@
-# comfyuiWATCHER progress relay.
+# ComfyUI Watcher progress relay.
 #
 # ComfyUI sends every execution message (progress, executing, execution_start,
 # execution_success/error, ...) ONLY to the client that submitted the prompt
 # (send_sync(..., server.client_id); sid=None would broadcast but is never used for these).
-# A passive monitor like comfyuiWATCHER therefore never sees step progress for jobs queued
+# A Watcher node in any other tab therefore never sees step progress for jobs queued
 # from the web UI. This shim wraps PromptServer.send_sync and re-emits each targeted
 # execution message as a broadcast copy under a "watcher."-prefixed event type, so ComfyUI's
 # own frontends ignore it and only watchers that opt in consume it.
@@ -38,13 +38,13 @@ try:
                 try:
                     _orig_send_sync(self, "watcher." + event, data, None)
                 except Exception:  # never let the relay break real message delivery
-                    logging.exception("comfyuiWATCHER relay failed to broadcast %s", event)
+                    logging.exception("ComfyUI Watcher relay failed to broadcast %s", event)
 
         PromptServer.send_sync = _relay_send_sync
         PromptServer._watcher_relay_installed = True
-        logging.info("comfyuiWATCHER progress relay installed (broadcasting watcher.* events)")
+        logging.info("ComfyUI Watcher progress relay installed (broadcasting watcher.* events)")
 except Exception:
-    logging.exception("comfyuiWATCHER progress relay failed to install")
+    logging.exception("ComfyUI Watcher progress relay failed to install")
 
 # ── Batch size of a list-expanded node (added 2026-08-13) ──
 # A "dataset" workflow feeds a list of prompts into one graph. ComfyUI runs each downstream node
@@ -73,14 +73,14 @@ try:
                         None,  # broadcast: every watcher, no client is targeted
                     )
             except Exception:
-                logging.exception("comfyuiWATCHER relay failed to report a batch size")
+                logging.exception("ComfyUI Watcher relay failed to report a batch size")
             return await _orig_map_over_list(prompt_id, unique_id, obj, input_data_all, func, *args, **kwargs)
 
         execution._async_map_node_over_list = _watcher_map_over_list
         execution._watcher_batch_installed = True
-        logging.info("comfyuiWATCHER relay: batch-size reporting installed")
+        logging.info("ComfyUI Watcher relay: batch-size reporting installed")
 except Exception:
-    logging.exception("comfyuiWATCHER relay failed to install batch-size reporting")
+    logging.exception("ComfyUI Watcher relay failed to install batch-size reporting")
 
 # ── How many nodes this run will execute (added 2026-08-17) ──
 # A watcher can COUNT the nodes it sees executing, but nothing in ComfyUI's protocol says how many
@@ -125,7 +125,7 @@ try:
                         None,  # broadcast: every watcher, no client is targeted
                     )
             except Exception:
-                logging.exception("comfyuiWATCHER relay failed to report the workflow size")
+                logging.exception("ComfyUI Watcher relay failed to report the workflow size")
 
         # Both entry points are wrapped: execute() is a thin sync wrapper around execute_async() on
         # current ComfyUI, but an older build has only the sync one. Wrapping whichever exists means
@@ -148,9 +148,9 @@ try:
             _PromptExecutor.execute = _watcher_execute
 
         execution._watcher_promptsize_installed = True
-        logging.info("comfyuiWATCHER relay: workflow-size reporting installed")
+        logging.info("ComfyUI Watcher relay: workflow-size reporting installed")
 except Exception:
-    logging.exception("comfyuiWATCHER relay failed to install workflow-size reporting")
+    logging.exception("ComfyUI Watcher relay failed to install workflow-size reporting")
 
 # ── Host build info: the NVIDIA driver version (added 2026-08-14) ──
 # ComfyUI's own /system_stats reports comfyui_version, python_version and pytorch_version (which
@@ -374,9 +374,9 @@ try:
             return web.json_response(await asyncio.to_thread(_watcher_vram))
 
         PromptServer._watcher_hostinfo_installed = True
-        logging.info("comfyuiWATCHER relay: /watcher/host_info and /watcher/vram installed")
+        logging.info("ComfyUI Watcher relay: /watcher/host_info and /watcher/vram installed")
 except Exception:
-    logging.exception("comfyuiWATCHER relay failed to install its /watcher routes")
+    logging.exception("ComfyUI Watcher relay failed to install its /watcher routes")
 
 # ── The watcher canvas nodes (added 2026-08-15) ──
 # TEN DISPLAY-ONLY NODES: four layouts, each with and without VRAM, plus two VRAM-only faces. They have no inputs and no outputs, so ComfyUI's executor

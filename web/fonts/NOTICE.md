@@ -1,7 +1,6 @@
 # Vendored fonts
 
-These files are bundled so the app loads no resources off the network — the renderer's CSP is
-`default-src 'self'`, and a webfont request would simply be blocked.
+These files are bundled so the nodes load nothing off the network.
 
 | File | Font | Author | License |
 |------|------|--------|---------|

@@ -3,8 +3,8 @@
 // TWO AXES, deliberately kept apart:
 //   - LAYOUT (Wells / Plate / Bar / Trace / VRAM) — what is on the face and where.
 //   - STYLE (rack / glass) — what it is made of. A style may repaint a surface, change a shape or
-//     add an ornament; it must never hide a value or change what a number means. Same rule the
-//     desktop widget's skins follow, and the reason a style is a WIDGET on the node rather than a
+//     add an ornament; it must never hide a value or change what a number means. That is also
+//     the reason a style is a WIDGET on the node rather than a
 //     second node: switching it must never cost you the node you already wired into a canvas.
 // Every layout renders in both styles from one code path — there is no "glass Plate" function to
 // drift from the plain one.
