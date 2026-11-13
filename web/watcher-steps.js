@@ -218,17 +218,22 @@ on('executing', (d, now) => {
   ensureTicking();
   // `executing {node: null}` closes a prompt. If no success/error arrived for it (a prompt queued
   // with no client_id never gets one), ask /history how it ended rather than guessing.
-  if (d?.node == null && d?.prompt_id && tracker.isRunning() && d.prompt_id === tracker.promptId) {
-    api.fetchApi(`/history/${encodeURIComponent(d.prompt_id)}`)
-      .then((r) => r.json())
-      .then((h) => {
-        const s = h?.[d.prompt_id]?.status?.status_str;
-        if (s === 'success' || s === 'error') tracker.onExecutionEnd(s, { prompt_id: d.prompt_id }, now);
-        redraw();
-      })
-      .catch(() => {});
-  }
+  if (d?.node == null && d?.prompt_id) settleFromHistory(d.prompt_id, now);
 });
+/** Ask /history whether the running prompt has ended, and how. No answer = still running. */
+function settleFromHistory(promptId, now) {
+  if (!promptId || !tracker.isRunning() || promptId !== tracker.promptId) return;
+  api.fetchApi(`/history/${encodeURIComponent(promptId)}`)
+    .then((r) => r.json())
+    .then((h) => {
+      const s = h?.[promptId]?.status?.status_str;
+      if ((s === 'success' || s === 'error') && promptId === tracker.promptId) {
+        tracker.onExecutionEnd(s, { prompt_id: promptId }, now);
+      }
+      redraw();
+    })
+    .catch(() => {});
+}
 on('execution_cached', (d, now) => tracker.onExecutionCached(d, now));
 // Relay-only, and always broadcast: there is no targeted twin to listen for. It is what turns the
 // stage line's bare position into "4 / 21" — see JobTracker.onPromptNodes.
@@ -241,6 +246,10 @@ on('execution_error', (d, now) => tracker.onExecutionEnd('error', d, now));
 on('execution_interrupted', (d, now) => tracker.onExecutionEnd('interrupted', d, now));
 api.addEventListener('status', (e) => {
   tracker.onStatus(e.detail);
+  // A prompt queued with no client_id gets no execution_success AND no closing `executing null`
+  // (main.py sends that only when client_id is set). The queue-status broadcast that follows the
+  // prompt leaving the queue is the one end signal every watcher hears, so check /history on it.
+  settleFromHistory(tracker.promptId, Date.now());
 });
 
 /**
