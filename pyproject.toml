@@ -1,7 +1,7 @@
 [project]
 name = "comfyui-watcher"
-description = "Progress nodes for your ComfyUI canvas: step, speed, time running, time left and VRAM, in a node you park in the corner of your graph."
-version = "1.0.2"
+description = "Progress nodes for your ComfyUI canvas: step, speed, time running, time left and VRAM, in a node you place anywhere on your graph."
+version = "1.0.3"
 license = { file = "LICENSE" }
 requires-python = ">=3.9"
 dependencies = []
